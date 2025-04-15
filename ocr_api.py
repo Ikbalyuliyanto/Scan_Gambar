@@ -10,7 +10,7 @@ ocr = PaddleOCR(use_angle_cls=True, lang='en', use_mp=False, enable_mkldnn=False
 UPLOAD_FOLDER = './uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# 🔍 Fungsi parsing hasil OCR menjadi JSON terstruktur
+# ðŸ” Fungsi parsing hasil OCR menjadi JSON terstruktur
 def parse_ktp_fields(lines):
     data = {
         'nik': '',
@@ -83,7 +83,7 @@ def parse_ktp_fields(lines):
     # Berlaku hingga
     data['berlaku_hingga'] = extract_by_keyword(['Berlaku Hingga'])
 
-    # 🧠 Fallback tambahan untuk inline atau typo
+    # ðŸ§  Fallback tambahan untuk inline atau typo
     for line in lines:
         line_clean = line.upper().replace(":", "").strip()
         if "TEMPAT/TGL LAHIR" in line_clean and not data["tempat_tanggal_lahir"]:
@@ -104,7 +104,7 @@ def parse_ktp_fields(lines):
     return data
 
 
-# 📥 Endpoint upload dan OCR
+# ðŸ“¥ Endpoint upload dan OCR
 @app.route('/scan', methods=['POST'])
 def scan():
     if 'image' not in request.files:
@@ -119,13 +119,13 @@ def scan():
         img = cv2.imread(filepath)
 
         if img is None:
-            print("❌ Gagal membaca gambar dari file:", filepath)
+            print("âŒ Gagal membaca gambar dari file:", filepath)
             return jsonify({'success': False, 'message': 'Image cannot be decoded'}), 400
 
         result = ocr.ocr(img, cls=True)
         extracted = [line[1][0] for line in result[0]]
 
-        # 🔄 Parsing ke data JSON terstruktur
+        # ðŸ”„ Parsing ke data JSON terstruktur
         parsed = parse_ktp_fields(extracted)
 
         return jsonify({
@@ -138,6 +138,6 @@ def scan():
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
-# 🚀 Jalankan server Flask di port 5001
+# ðŸš€ Jalankan server Flask di port 5001
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5001)
+    app.run(host='0.0.0.0', port=8080)
